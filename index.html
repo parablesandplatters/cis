@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>Centralized Identification System</title>
+
+  <style>
+
+    * {
+
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+
+    }
+
+    body {
+
+      background-color: black;
+      font-family: 'Courier New', Courier, monospace;
+      color: greenyellow;
+      overflow-x: hidden;
+
+    }
+
+    header {
+
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      position: relative;
+      z-index: 100;
+      text-align: center;
+      border-bottom: 1px solid greenyellow;
+
+    }
+
+    header h1 {
+
+      font-size: 2.5em;
+      color: greenyellow;
+
+    }
+
+    nav {
+
+      margin-top: 10px;
+
+    }
+
+    nav ul {
+
+      list-style-type: none;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+    }
+
+    nav ul li {
+
+      margin: 10px;
+
+    }
+
+    nav ul li a {
+
+      color: greenyellow;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2em;
+      transition: all 0.3s ease;
+
+    }
+
+    nav ul li a:hover {
+
+      text-shadow: 0 0 5px darkblue;
+
+    }
+
+    #binary-stream {
+
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+
+    }
+
+    .binary {
+
+      font-size: 1rem;
+      color: greenyellow;
+      opacity: 0.3;
+      animation: fall linear infinite;
+      position: absolute;
+      white-space: nowrap;
+
+    }
+
+    @keyframes fall {
+
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(100vh);
+      }
+
+    }
+
+    .form-popup {
+
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 101;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border: 2px solid greenyellow;
+      border-radius: 10px;
+      max-width: 90%;
+      overflow-y: auto;
+      max-height: 80vh;
+      color: greenyellow;
+
+    }
+
+    .form-popup input,
+    .form-popup select,
+    .form-popup textarea {
+
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: transparent;
+      border: 1px solid greenyellow;
+      color: greenyellow;
+
+    }
+
+    .form-popup button {
+
+      padding: 10px 20px;
+      background-color: greenyellow;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+
+    }
+
+    .popup-overlay {
+
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      display: none;
+
+    }
+
+    .status-check {
+
+      text-align: center;
+      margin-top: 30px;
+      color: greenyellow;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div id="binary-stream"></div>
+
+  <header>
+
+    <h1>Centralized Identification System</h1>
+    <h1>(C.I.S)</h1>
+
+    <nav>
+      <ul>
+        <li><a href="#" onclick="openForm()">F1 -</a></li>
+        <li><a href="#">F14 -</a></li>
+        <li><a href="#">F7 -</a></li>
+        <li><a href="#">F10 -</a></li>
+        <li><a href="#">F9</a></li>
+      </ul>
+    </nav>
+
+  </header>
+
+  <div class="popup-overlay" id="overlay" onclick="closeForm()"></div>
+
+  <div class="form-popup" id="idForm">
+    <h2>Create Your ID</h2>
+    <br>
+    <form id="cisForm">
+      <label>Name:</label>
+      <input type="text" name="name" required>
+	  <label>Surname:</label>
+      <input type="text" surname="surname" required>
+      <label>Email:</label>
+      <input type="email" name="email" required>
+      <label>Date of Birth:</label>
+      <input type="datetime" name="dob" required>
+      <label>Address:</label>
+      <textarea name="address" rows="3" required></textarea>
+      <label>Phone Number:</label>
+      <input type="tel" name="phone" required>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+
+    function openForm() {
+
+      document.getElementById('idForm').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+
+    }
+
+    function closeForm() {
+
+      document.getElementById('idForm').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+
+    }
+
+    function generateID(dob) {
+
+      const date = new Date(dob);
+      const base = date.getMonth() + 1 + '' + date.getDate() + '' + date.getFullYear();
+      let uniquePart;
+      do {
+        uniquePart = Math.floor(1000000 + Math.random() * 9000000);
+      } while (localStorage.getItem(base + uniquePart));
+      return base + uniquePart;
+
+    }
+	  
+	  // reference number unique generation
+
+    document.getElementById('cisForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const dob = formData.get('dob');
+      const id = generateID(dob);
+
+      const user = {
+
+        id: id,
+        fullname: formData.get('fullname'),
+        email: formData.get('email'),
+        dob: dob,
+        address: formData.get('address'),
+        phone: formData.get('phone')
+
+      };
+
+      localStorage.setItem(id, JSON.stringify(user));
+
+      alert(`Application submitted successfully and is now in review! Please check your email.`);
+      this.reset();
+      closeForm();
+    });
+
+    function checkStatus() {
+
+      const number = document.getElementById('applicationNumber').value;
+      const data = localStorage.getItem(number);
+      const statusDiv = document.getElementById('statusResult');
+      if (data) {
+        const user = JSON.parse(data);
+        statusDiv.innerHTML = `<p>Application found for: <strong>${user.fullname}</strong></p><p>Status: Pending Verification</p>`;
+      } else {
+        statusDiv.innerHTML = '<p>No application found. Please check your number.</p>';
+      }
+
+    }
+
+     const binaryContainer = document.getElementById('binary-stream');
+    function createBinaryStream() {
+      for (let i = 0; i < 10; i++) {
+        const bin = document.createElement('div');
+        bin.className = 'binary';
+        bin.style.left = Math.random() * 100 + 'vw';
+        bin.style.animationDuration = 2 + Math.random() * 3 + 's';
+        bin.innerText = Math.random() < 0.5 ? '0' : '1';
+        binaryContainer.appendChild(bin);
+      }
+    }
+    setInterval(createBinaryStream, 7000);
+
+  </script>
+	
+	<!--reference number unique generation-->
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
